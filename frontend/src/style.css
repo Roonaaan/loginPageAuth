@@ -1,0 +1,156 @@
+body {
+  margin: 0;
+  font-family: system-ui, Arial;
+  background: #0f172a;
+  color: white;
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  background: #1e293b;
+  padding: 2rem;
+  border-radius: 16px;
+  width: 360px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  text-align: center;
+}
+
+h2 {
+  margin-bottom: 20px;
+}
+
+input {
+  width: auto;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+}
+
+.password-wrapper {
+  position: relative;
+  width: 100%;
+  margin-top: 10px; /* match other inputs */
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding: 12px;
+  padding-right: 40px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  box-sizing: border-box; /* ensures padding doesn't overflow width */
+  margin-top: 0; /* prevent double margin since wrapper already has it */
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #64748b;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.toggle-password:hover {
+  color: #1e293b;
+}
+
+button {
+  width: 100%;
+  margin-top: 15px;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.primary-btn {
+  background: #3b82f6;
+  color: white;
+}
+
+.primary-btn:hover {
+  background: #2563eb;
+}
+
+.divider {
+  margin: 20px 0;
+  opacity: 0.6;
+}
+
+.password-rules {
+  list-style: none;
+  padding: 8px 0 0 0;
+  margin: 0;
+  text-align: left;
+  font-size: 0.82rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.password-rules li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rule-pass {
+  color: #4ade80;
+}
+
+.rule-fail {
+  color: #f87171;
+}
+
+/* OAuth Buttons */
+.oauth-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* Facebook */
+.facebook {
+  background: #1877f2;
+  color: white;
+}
+
+/* Google */
+.google {
+  background: white;
+  color: black;
+}
+
+/* Microsoft */
+.microsoft {
+  background: white;
+  color: black;
+}
+
+.oauth-btn img {
+  width: 18px;
+  height: 18px;
+}
+
+.link {
+  margin-top: 15px;
+  color: #60a5fa;
+  cursor: pointer;
+}
