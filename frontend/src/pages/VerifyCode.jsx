@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { apiRequest } from "../utils/api";
 
 const VerifyCode = () => {
@@ -9,16 +10,21 @@ const VerifyCode = () => {
   const phone = decodeURIComponent(new URLSearchParams(window.location.search).get("phone"));
 
   const handleSubmit = async () => {
-    if (code.length !== 6) return alert("Please enter the 6-digit code");
+    if (code.length !== 6) return toast.error("Please enter the 6-digit code");
     setLoading(true);
     try {
       const data = await apiRequest("/verify-code", "POST", { phone, code });
+      toast.success("Code verified!");
       navigate(`/reset-password?token=${data.token}`);
     } catch (err) {
-      alert(err.message);
+      toast.error(err.message);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") handleSubmit();
   };
 
   return (
@@ -34,6 +40,7 @@ const VerifyCode = () => {
           maxLength={6}
           value={code}
           onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+          onKeyDown={handleKeyDown}
           style={{ letterSpacing: "8px", fontSize: "1.2rem", textAlign: "center" }}
         />
         <button className="primary-btn" onClick={handleSubmit} disabled={loading}>

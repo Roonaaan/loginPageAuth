@@ -5,17 +5,11 @@ const { register, login, forgotPassword, verifyCode, resetPassword } = require("
 const { protect } = require("../middleware/authMiddleware");
 const pool = require("../config/db");
 const jwt = require("jsonwebtoken");
-require("../config/passport"); // loads all strategies
-
-
-
+require("../config/passport");
 
 const generateToken = (user) =>
-  jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, {
-    expiresIn: "7d",
-  });
+  jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
-// Helper: OAuth callback redirect with JWT
 const oauthCallback = (req, res) => {
   const token = generateToken(req.user);
   const user = encodeURIComponent(JSON.stringify({
@@ -26,16 +20,14 @@ const oauthCallback = (req, res) => {
   res.redirect(`${process.env.CLIENT_URL}/oauth-success?token=${token}&user=${user}`);
 };
 
-
-
-// Local
+// Local Auth
 router.post("/register", register);
 router.post("/login", login);
 router.post("/forgot-password", forgotPassword);
 router.post("/verify-code", verifyCode);
 router.post("/reset-password", resetPassword);
 
-// JWT Based Login
+// Protected
 router.get("/me", protect, async (req, res) => {
   try {
     const result = await pool.query(

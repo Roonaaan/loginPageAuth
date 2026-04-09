@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { apiRequest } from "../utils/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -16,10 +17,8 @@ const rules = [
 const Signup = () => {
   const navigate = useNavigate();
   const [touched, setTouched] = useState(false);
-  const[form, setForm] = useState({ name: "", email: "", password: "", phone: "" });
-
+  const [form, setForm] = useState({ name: "", email: "", password: "", phone: "" });
   const [confirmPassword, setConfirmPassword] = useState("");
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,16 +30,20 @@ const Signup = () => {
   const passwordsMatch = form.password === confirmPassword;
 
   const handleSubmit = async () => {
-    if (!allPassed) return alert("Fix password requirements first");
-    if (!passwordsMatch) return alert("Passwords do not match");
+    if (!allPassed) return toast.error("Fix password requirements first");
+    if (!passwordsMatch) return toast.error("Passwords do not match");
 
     try {
       await apiRequest("/register", "POST", form);
-      alert("Signup successful");
+      toast.success("Account created successfully!");
       navigate("/");
     } catch (err) {
-      alert(err.message);
+      toast.error(err.message);
     }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") handleSubmit();
   };
 
   return (
@@ -53,6 +56,7 @@ const Signup = () => {
           name="name"
           placeholder="Full Name"
           onChange={handleChange}
+          onKeyDown={handleKeyDown}
         />
 
         <input
@@ -60,6 +64,7 @@ const Signup = () => {
           name="email"
           placeholder="Email"
           onChange={handleChange}
+          onKeyDown={handleKeyDown}
         />
 
         <input
@@ -67,6 +72,7 @@ const Signup = () => {
           name="phone"
           placeholder="Phone Number (e.g. +639123456789)"
           onChange={handleChange}
+          onKeyDown={handleKeyDown}
         />
 
         <input
@@ -74,6 +80,7 @@ const Signup = () => {
           name="password"
           placeholder="Password"
           onChange={handleChange}
+          onKeyDown={handleKeyDown}
           style={{ marginTop: "10px" }}
         />
 
@@ -84,7 +91,7 @@ const Signup = () => {
               return (
                 <li key={i} className={passed ? "rule-pass" : "rule-fail"}>
                   <FontAwesomeIcon icon={passed ? faCheck : faXmark} />
-                  {rule.label}
+                  {" "}{rule.label}
                 </li>
               );
             })}
@@ -96,11 +103,13 @@ const Signup = () => {
           placeholder="Confirm Password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
+          onKeyDown={handleKeyDown}
           style={{ marginTop: "10px" }}
         />
 
         {confirmPassword.length > 0 && (
-          <p className={passwordsMatch ? "rule-pass" : "rule-fail"}
+          <p
+            className={passwordsMatch ? "rule-pass" : "rule-fail"}
             style={{ fontSize: "0.82rem", textAlign: "left", marginTop: "6px" }}
           >
             <FontAwesomeIcon icon={passwordsMatch ? faCheck : faXmark} />

@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import { apiRequest } from "../utils/api";
 
 const Dashboard = () => {
@@ -16,15 +18,30 @@ const Dashboard = () => {
     if (stored) {
       setUser(JSON.parse(stored));
     } else {
-      // Fallback: fetch from /me for email/password users
       apiRequest("/me", "GET").then(setUser).catch(() => navigate("/"));
     }
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    navigate("/");
+  const handleLogout = async () => {
+    const result = await Swal.fire({
+      title: "Logging out?",
+      text: "Are you sure you want to log out?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3b82f6",
+      cancelButtonColor: "#475569",
+      confirmButtonText: "Yes, log out",
+      cancelButtonText: "Cancel",
+      background: "#1e293b",
+      color: "#ffffff",
+    });
+
+    if (result.isConfirmed) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      toast.success("Logged out successfully!");
+      navigate("/");
+    }
   };
 
   if (!user) return <p>Loading...</p>;

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { apiRequest } from "../utils/api";
 
 const ForgotPassword = () => {
@@ -9,16 +10,20 @@ const ForgotPassword = () => {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
-    if (!phone) return alert("Please enter your phone number");
+    if (!phone) return toast.error("Please enter your phone number");
     setLoading(true);
     try {
       await apiRequest("/forgot-password", "POST", { phone });
       setSent(true);
     } catch (err) {
-      alert(err.message);
+      toast.error(err.message);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") handleSubmit();
   };
 
   if (sent) return (
@@ -48,6 +53,7 @@ const ForgotPassword = () => {
           placeholder="Phone (e.g. +639123456789)"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
+          onKeyDown={handleKeyDown}
         />
         <button className="primary-btn" onClick={handleSubmit} disabled={loading}>
           {loading ? "Sending..." : "Send Reset Code"}

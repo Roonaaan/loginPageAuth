@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import Signin from "./pages/Signin";
 import Signup from "./pages/Signup";
 import OAuthSuccess from "./pages/OAuthSuccess";
@@ -9,6 +10,7 @@ import ResetPassword from "./pages/ResetPassword";
 
 const App = () => (
   <BrowserRouter>
+    <ToastContainer position="top-right" autoClose={3000} theme="dark" />
     <Routes>
       <Route path="/" element={<Signin />} />
       <Route path="/signup" element={<Signup />} />

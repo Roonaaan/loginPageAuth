@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import OAuthButtons from "../components/OAuthButtons";
 import { apiRequest } from "../utils/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -7,11 +8,7 @@ import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 const Signin = () => {
   const navigate = useNavigate();
-
-  const [form, setForm] = useState({
-    email: "",
-    password: ""
-  });
+  const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
@@ -23,21 +20,28 @@ const Signin = () => {
       const data = await apiRequest("/login", "POST", form);
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
+      toast.success("Logged in successfully!");
       navigate("/dashboard");
     } catch (err) {
-      alert(err.message);
+      toast.error(err.message);
     }
   };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") handleSubmit();
+  };
+
   return (
     <div className="container">
       <div className="card">
-        <h2>Signin Page</h2>
+        <h2>Sign In</h2>
 
         <input
           type="email"
           name="email"
           placeholder="Email"
           onChange={handleChange}
+          onKeyDown={handleKeyDown}
         />
 
         <div className="password-wrapper">
@@ -46,8 +50,8 @@ const Signin = () => {
             name="password"
             placeholder="Password"
             onChange={handleChange}
+            onKeyDown={handleKeyDown}
           />
-
           <span
             className="toggle-password"
             onClick={() => setShowPassword(!showPassword)}

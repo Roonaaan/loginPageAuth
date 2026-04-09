@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { apiRequest } from "../utils/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -27,19 +28,24 @@ const ResetPassword = () => {
   const passwordsMatch = password === confirmPassword;
 
   const handleSubmit = async () => {
-    if (!allPassed) return alert("Fix password requirements first");
-    if (!passwordsMatch) return alert("Passwords do not match");
-    if (!token) return alert("Invalid or missing token");
+    if (!allPassed) return toast.error("Fix password requirements first");
+    if (!passwordsMatch) return toast.error("Passwords do not match");
+    if (!token) return toast.error("Invalid or missing token");
 
     setLoading(true);
     try {
       await apiRequest("/reset-password", "POST", { token, password });
+      toast.success("Password reset successfully!");
       setSuccess(true);
     } catch (err) {
-      alert(err.message);
+      toast.error(err.message);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") handleSubmit();
   };
 
   return (
@@ -63,6 +69,7 @@ const ResetPassword = () => {
               placeholder="New Password"
               value={password}
               onChange={(e) => { setPassword(e.target.value); setTouched(true); }}
+              onKeyDown={handleKeyDown}
               style={{ marginTop: "10px" }}
             />
 
@@ -85,11 +92,13 @@ const ResetPassword = () => {
               placeholder="Confirm New Password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              onKeyDown={handleKeyDown}
               style={{ marginTop: "10px" }}
             />
 
             {confirmPassword.length > 0 && (
-              <p className={passwordsMatch ? "rule-pass" : "rule-fail"}
+              <p
+                className={passwordsMatch ? "rule-pass" : "rule-fail"}
                 style={{ fontSize: "0.82rem", textAlign: "left", marginTop: "6px" }}
               >
                 <FontAwesomeIcon icon={passwordsMatch ? faCheck : faXmark} />
