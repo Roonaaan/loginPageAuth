@@ -126,10 +126,16 @@ button {
   gap: 10px;
 }
 
-/* Facebook */
-.facebook {
-  background: #1877f2;
+/* Github */
+.github {
+  background: #24292e;
   color: white;
+}
+
+/* GoTyme */
+.gotyme {
+  background: linear-gradient(135deg, #39ace7, #39ace7);
+  color: #2D2D3A;
 }
 
 /* Google */

@@ -11,7 +11,15 @@ const OAuthSuccess = () => {
 
     if (token) {
       localStorage.setItem("token", token);
-      if (user) localStorage.setItem("user", user);
+      if (user) {
+        try {
+          // Parse and re-stringify to ensure clean JSON in localStorage
+          const parsed = JSON.parse(decodeURIComponent(user));
+          localStorage.setItem("user", JSON.stringify(parsed));
+        } catch {
+          localStorage.setItem("user", user);
+        }
+      }
       navigate("/dashboard");
     }
   }, []);

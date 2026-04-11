@@ -24,7 +24,16 @@ const register = async (req, res) => {
     );
 
     const user = result.rows[0];
-    res.status(201).json({ token: generateToken(user), user: { id: user.id, name: user.name, email: user.email } });
+    res.status(201).json({
+      token: generateToken(user),
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        picture: user.picture, // ← add this
+      }
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -44,7 +53,16 @@ const login = async (req, res) => {
     if (!match)
       return res.status(400).json({ message: "Invalid credentials" });
 
-    res.json({ token: generateToken(user), user: { id: user.id, name: user.name, email: user.email } });
+    res.json({
+      token: generateToken(user),
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        picture: user.picture, // ← add this
+      }
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -119,4 +137,39 @@ const resetPassword = async (req, res) => {
   }
 };
 
-module.exports = { register, login, forgotPassword, verifyCode, resetPassword };
+// PUT /api/auth/profile
+const updateProfile = async (req, res) => {
+  const { name, email, phone, picture } = req.body;
+  try {
+    const result = await pool.query(
+      "UPDATE users SET name = $1, email = $2, phone = $3, picture = $4 WHERE id = $5 RETURNING id, name, email, phone, picture",
+      [name, email, phone, picture, req.user.id]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// PUT /api/auth/password
+const updatePassword = async (req, res) => {
+  const { password } = req.body;
+  try {
+    const errors = [];
+    if (password.length < 8) errors.push("Must be at least 8 characters");
+    if (!/[A-Z]/.test(password)) errors.push("Must include an uppercase letter");
+    if (!/[a-z]/.test(password)) errors.push("Must include a lowercase letter");
+    if (!/[0-9]/.test(password)) errors.push("Must include a number");
+    if (!/[!@#$%^&*]/.test(password)) errors.push("Must include a special character");
+    if (/(.)\1{2,}/.test(password)) errors.push("Cannot contain repeating characters");
+    if (errors.length > 0) return res.status(400).json({ message: errors[0] });
+
+    const hashed = await bcrypt.hash(password, 10);
+    await pool.query("UPDATE users SET password = $1 WHERE id = $2", [hashed, req.user.id]);
+    res.json({ message: "Password updated successfully." });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+module.exports = { register, login, forgotPassword, verifyCode, resetPassword, updateProfile, updatePassword };

@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
-const { register, login, forgotPassword, verifyCode, resetPassword } = require("../controllers/authController");
+const { register, login, forgotPassword, verifyCode, resetPassword, updateProfile, updatePassword } = require("../controllers/authController");
 const { protect } = require("../middleware/authMiddleware");
 const pool = require("../config/db");
 const jwt = require("jsonwebtoken");
@@ -31,7 +31,7 @@ router.post("/reset-password", resetPassword);
 router.get("/me", protect, async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT id, name, email, picture, created_at FROM users WHERE id = $1",
+      "SELECT id, name, email, phone, picture, created_at FROM users WHERE id = $1",
       [req.user.id]
     );
     res.json(result.rows[0]);
@@ -40,6 +40,9 @@ router.get("/me", protect, async (req, res) => {
   }
 });
 
+router.put("/profile", protect, updateProfile);
+router.put("/password", protect, updatePassword);
+
 // Google
 router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 router.get("/google/callback",
@@ -47,17 +50,10 @@ router.get("/google/callback",
   oauthCallback
 );
 
-// Microsoft
-router.get("/microsoft", passport.authenticate("microsoft", { scope: ["user.read"] }));
-router.get("/microsoft/callback",
-  passport.authenticate("microsoft", { session: false, failureRedirect: "/" }),
-  oauthCallback
-);
-
-// Facebook
-router.get("/facebook", passport.authenticate("facebook", { scope: ["email"] }));
-router.get("/facebook/callback",
-  passport.authenticate("facebook", { session: false, failureRedirect: "/" }),
+// GitHub
+router.get("/github", passport.authenticate("github", { scope: ["user:email"] }));
+router.get("/github/callback",
+  passport.authenticate("github", { session: false, failureRedirect: "/" }),
   oauthCallback
 );
 

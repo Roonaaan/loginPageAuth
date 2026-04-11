@@ -17,7 +17,7 @@ const rules = [
 const Signup = () => {
   const navigate = useNavigate();
   const [touched, setTouched] = useState(false);
-  const [form, setForm] = useState({ name: "", email: "", password: "", phone: "" });
+  const [form, setForm] = useState({ name: "", email: "", password: "", phone: "+63" });
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleChange = (e) => {
@@ -71,7 +71,13 @@ const Signup = () => {
           type="tel"
           name="phone"
           placeholder="Phone Number (e.g. +639123456789)"
-          onChange={handleChange}
+          value={form.phone}
+          onChange={(e) => {
+            // Prevent removing the +63 prefix
+            const val = e.target.value;
+            if (!val.startsWith("+63 ")) return;
+            setForm({ ...form, phone: val });
+          }}
           onKeyDown={handleKeyDown}
         />
 
